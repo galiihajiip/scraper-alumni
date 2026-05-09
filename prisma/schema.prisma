@@ -12,7 +12,7 @@ model Alumni {
   namaLengkap   String
   angkatan      Int?
   tahunLulus    Int?
-  ipk           Float?
+  ipk           Float?    @db.Real
   linkedInUrl   String    @unique
   fotoProfil    String?
   spesialisasi  SpesialisasiRole?
@@ -24,10 +24,13 @@ model Alumni {
   updatedAt     DateTime  @updatedAt
   lastScrapedAt DateTime?
   
+  // Constraints
   @@index([angkatan])
   @@index([spesialisasi])
   @@index([tahunLulus])
   @@index([createdAt])
+  @@index([angkatan, spesialisasi])
+  @@map("alumni")
 }
 
 model Pekerjaan {
@@ -39,7 +42,7 @@ model Pekerjaan {
   tanggalMulai   DateTime?
   tanggalSelesai DateTime?
   lokasi         String?
-  deskripsi      String?
+  deskripsi      String?   @db.Text
   
   alumni         Alumni    @relation(fields: [alumniId], references: [id], onDelete: Cascade)
   
@@ -49,6 +52,8 @@ model Pekerjaan {
   @@index([alumniId])
   @@index([isCurrent])
   @@index([perusahaan])
+  @@index([alumniId, isCurrent])
+  @@map("pekerjaan")
 }
 
 model TechStack {
@@ -62,6 +67,8 @@ model TechStack {
   updatedAt   DateTime          @updatedAt
   
   @@index([kategori])
+  @@index([nama])
+  @@map("tech_stack")
 }
 
 model AlumniTechStack {
@@ -79,13 +86,14 @@ model AlumniTechStack {
   @@unique([alumniId, techStackId])
   @@index([alumniId])
   @@index([techStackId])
+  @@map("alumni_tech_stack")
 }
 
 model ScrapingLog {
   id            String          @id @default(uuid())
-  url           String
+  url           String          @db.VarChar(500)
   status        ScrapingStatus
-  errorMessage  String?
+  errorMessage  String?         @db.Text
   retryCount    Int             @default(0)
   duration      Int?            // milliseconds
   
@@ -95,6 +103,8 @@ model ScrapingLog {
   @@index([status])
   @@index([createdAt])
   @@index([url])
+  @@index([status, createdAt])
+  @@map("scraping_log")
 }
 
 model Session {
@@ -110,6 +120,8 @@ model Session {
   @@index([platform])
   @@index([isActive])
   @@index([expiresAt])
+  @@index([platform, isActive])
+  @@map("session")
 }
 
 enum SpesialisasiRole {
