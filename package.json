@@ -9,6 +9,8 @@
     "build": "tsc",
     "scrape": "npm run build && node dist/cli/index.js scrape",
     "export": "npm run build && node dist/cli/index.js export",
+    "export:csv": "npm run build && node dist/cli/index.js export csv",
+    "export:json": "npm run build && node dist/cli/index.js export json",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
