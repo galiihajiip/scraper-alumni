@@ -1,0 +1,54 @@
+{
+  "name": "upn-alumni-scraper",
+  "version": "1.0.0",
+  "description": "LinkedIn Scraper untuk data alumni Informatika UPN Veteran Jawa Timur (2004-2026)",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tsx watch src/cli/index.ts",
+    "build": "tsc",
+    "scrape": "npm run build && node dist/cli/index.js scrape",
+    "export": "npm run build && node dist/cli/index.js export",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx src/database/seed.ts",
+    "install-browsers": "playwright install chromium",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "scraper",
+    "linkedin",
+    "alumni",
+    "upn",
+    "typescript",
+    "playwright"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "commander": "^12.0.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.42.0",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "eslint": "^8.57.0",
+    "prisma": "^5.10.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

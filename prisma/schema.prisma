@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Alumni {
+  id            String    @id @default(uuid())
+  namaLengkap   String
+  angkatan      Int?
+  tahunLulus    Int?
+  ipk           Float?
+  linkedInUrl   String    @unique
+  fotoProfil    String?
+  spesialisasi  SpesialisasiRole?
+  
+  pekerjaan     Pekerjaan[]
+  techStacks    AlumniTechStack[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastScrapedAt DateTime?
+  
+  @@index([angkatan])
+  @@index([spesialisasi])
+  @@index([tahunLulus])
+  @@index([createdAt])
+}
+
+model Pekerjaan {
+  id             String    @id @default(uuid())
+  alumniId       String
+  posisi         String
+  perusahaan     String
+  isCurrent      Boolean   @default(false)
+  tanggalMulai   DateTime?
+  tanggalSelesai DateTime?
+  lokasi         String?
+  deskripsi      String?
+  
+  alumni         Alumni    @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@index([alumniId])
+  @@index([isCurrent])
+  @@index([perusahaan])
+}
+
+model TechStack {
+  id          String            @id @default(uuid())
+  nama        String            @unique
+  kategori    TechCategory
+  
+  alumni      AlumniTechStack[]
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  @@index([kategori])
+}
+
+model AlumniTechStack {
+  id           String     @id @default(uuid())
+  alumniId     String
+  techStackId  String
+  level        SkillLevel?
+  
+  alumni       Alumni     @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+  techStack    TechStack  @relation(fields: [techStackId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  @@unique([alumniId, techStackId])
+  @@index([alumniId])
+  @@index([techStackId])
+}
+
+model ScrapingLog {
+  id            String          @id @default(uuid())
+  url           String
+  status        ScrapingStatus
+  errorMessage  String?
+  retryCount    Int             @default(0)
+  duration      Int?            // milliseconds
+  
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  @@index([status])
+  @@index([createdAt])
+  @@index([url])
+}
+
+model Session {
+  id            String     @id @default(uuid())
+  platform      String     @default("linkedin") // linkedin, dll
+  sessionData   Json
+  isActive      Boolean    @default(true)
+  expiresAt     DateTime
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  @@index([platform])
+  @@index([isActive])
+  @@index([expiresAt])
+}
+
+enum SpesialisasiRole {
+  FRONTEND
+  BACKEND
+  FULLSTACK
+  AI_ENGINEER
+  DATA_SCIENTIST
+  DEVOPS
+  MOBILE
+  GAME_DEV
+  SECURITY
+  QA_ENGINEER
+  LAINNYA
+}
+
+enum TechCategory {
+  LANGUAGE
+  FRAMEWORK
+  DATABASE
+  CLOUD
+  DEVOPS
+  AI_ML
+  TOOL
+  LIBRARY
+  MOBILE
+  OTHER
+}
+
+enum SkillLevel {
+  beginner
+  intermediate
+  advanced
+  expert
+}
+
+enum ScrapingStatus {
+  PENDING
+  IN_PROGRESS
+  SUCCESS
+  FAILED
+  RETRYING
+  SKIPPED
+}
